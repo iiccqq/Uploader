@@ -214,7 +214,7 @@ public class UploadUtil {
                 }
                 result = sb1.toString();
                 Log.e(TAG, "result : " + result);
-                sendMessage(UPLOAD_SUCCESS_CODE, "上传结果："
+                sendMessage(UPLOAD_SUCCESS_CODE, "上传" + file.getName() + "结果："
                         + result);
                 return;
             } else {

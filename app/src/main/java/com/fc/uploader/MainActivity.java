@@ -8,6 +8,7 @@ import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,15 +43,15 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
     /***
      * 这里的这个URL是我服务器的javaEE环境URL
      */
-    private static String requestURL = "http://10.0.2.2:8080/upload";
-    private Button setServerIpButton, uploadButton;
-    private ImageView imageView;
+    private static String requestURL = "";//http://10.0.2.2:8080/upload";
+    private Button  uploadButton;
     private TextView uploadImageResult;
     private ProgressBar progressBar;
 
     private String picPath = null;
-    private String dirPaths = "/storage/emulated/0/DCIM/Camera";
+    private String dirPaths = "/storage/emulated/0/DCIM/Camera;/storage/emulated/0/tencent/MicroMsg/WeiXin";
 
+    private EditText serverIpText;
     /**
      * Called when the activity is first created.
      */
@@ -68,10 +69,8 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
         uploadButton = (Button) this.findViewById(R.id.uploadImage);
         uploadButton.setOnClickListener(this);
         uploadImageResult = (TextView) findViewById(R.id.uploadImageResult);
-
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        setServerIpButton = (Button) this.findViewById(R.id.setServerIp);
-        setServerIpButton.setOnClickListener(this);
+        serverIpText =  (EditText) findViewById(R.id.serverIp);
     }
 
     @Override
@@ -80,9 +79,6 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
         switch (v.getId()) {
             case R.id.uploadImage:
                     handler.sendEmptyMessage(TO_UPLOAD_FILE);
-                break;
-            case R.id.setServerIp:
-                handler.sendEmptyMessage(SET_SERVER_IP);
                 break;
             default:
                 break;
@@ -105,10 +101,13 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
     }
 
     private void toUploadFile() {
-        uploadImageResult.setText("正在上传中...");
+        String serverIp = serverIpText.getText().toString();
+        requestURL = String.format("http://%s:8080/upload",serverIp);
+                uploadImageResult.setText("开始上传到" + requestURL);
         String []  dirPathsArray = dirPaths.split(";");
        for(String dirPath : dirPathsArray) {
             File dir = new File(dirPath);
+           if(dir.exists() && dir.isDirectory())
             for (File f : dir.listFiles()) {
                 if (f.isDirectory())
                     continue;
@@ -118,8 +117,10 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
                 uploadUtil.setOnUploadProcessListener(this);  //设置监听器监听上传状态
 
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("filePath", "photo");
+                String desDir = f.getParent().substring(f.getParent().lastIndexOf("/")+1);
+                params.put("filePath", desDir);
                 params.put("uploadfile", "uploadfile");
+
                 uploadUtil.uploadFile(f.getAbsolutePath(), fileKey, requestURL, params);
             }
        }
@@ -140,8 +141,9 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
                     progressBar.setProgress(msg.arg1);
                     break;
                 case UPLOAD_FILE_DONE:
-                    String result = "响应码：" + msg.arg1 + "\n响应信息：" + msg.obj + "\n耗时：" + UploadUtil.getRequestTime() + "秒";
-                    uploadImageResult.setText(result);
+                    String result = "响应码：" + msg.arg1 + "\n响应信息：" + msg.obj + "\n耗时：" + UploadUtil.getRequestTime() + "秒\n";
+
+                    uploadImageResult.append(result);
                     break;
                 case SET_SERVER_IP:
 
