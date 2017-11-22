@@ -21,6 +21,7 @@ public class UploadUtil {
     private static final String LINE_END = "\r\n";
     private static final String CONTENT_TYPE = "multipart/form-data"; // 内容类型  
 
+    private static final int BUFFER_SIZE = 1024*1024*3;
     private UploadUtil() {
 
     }
@@ -38,8 +39,8 @@ public class UploadUtil {
     }
 
     private static final String TAG = "UploadUtil";
-    private int readTimeOut = 10 * 1000; // 读取超时  
-    private int connectTimeout = 10 * 1000; // 超时时间  
+    private int readTimeOut = 1000 * 1000; // 读取超时
+    private int connectTimeout = 2 * 1000; // 超时时间
     /*** 
      * 请求使用多长时间 
      */
@@ -181,7 +182,7 @@ public class UploadUtil {
             /**上传文件*/
             InputStream is = new FileInputStream(file);
             onUploadProcessListener.initUpload((int) file.length());
-            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[BUFFER_SIZE];
             int len = 0;
             int curLen = 0;
             while ((len = is.read(bytes)) != -1) {
@@ -209,12 +210,14 @@ public class UploadUtil {
                 InputStream input = conn.getInputStream();
                 StringBuffer sb1 = new StringBuffer();
                 int ss;
-                while ((ss = input.read()) != -1) {
-                    sb1.append((char) ss);
+                byte [] bf = new byte[1024];
+                while ((ss = input.read(bf)) != -1) {
+                    String s = new String(bf,"utf-8");
+                    sb1.append(s);
                 }
                 result = sb1.toString();
                 Log.e(TAG, "result : " + result);
-                sendMessage(UPLOAD_SUCCESS_CODE, "上传" + file.getName() + "结果："
+                sendMessage(UPLOAD_SUCCESS_CODE, "上传" + file.getName() + ",结果："
                         + result);
                 return;
             } else {

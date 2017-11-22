@@ -1,7 +1,10 @@
 package com.fc.uploader;
 
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,6 +55,11 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
     private String dirPaths = "/storage/emulated/0/DCIM/Camera;/storage/emulated/0/tencent/MicroMsg/WeiXin";
 
     private EditText serverIpText;
+
+    private int uploadSuccessCount = 0;
+    private int uploadCallbackCount = 0;
+    private int uploadTotalTime = 0;
+    private int fileCount = 0;
     /**
      * Called when the activity is first created.
      */
@@ -99,31 +107,78 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
         msg.obj = message;
         handler.sendMessage(msg);
     }
-
-    private void toUploadFile() {
-        String serverIp = serverIpText.getText().toString();
-        requestURL = String.format("http://%s:8080/upload",serverIp);
-                uploadImageResult.setText("开始上传到" + requestURL);
-        String []  dirPathsArray = dirPaths.split(";");
-       for(String dirPath : dirPathsArray) {
-            File dir = new File(dirPath);
-           if(dir.exists() && dir.isDirectory())
-            for (File f : dir.listFiles()) {
-                if (f.isDirectory())
-                    continue;
-                String fileKey = "uploadfile";
-                UploadUtil uploadUtil = UploadUtil.getInstance();
-                ;
-                uploadUtil.setOnUploadProcessListener(this);  //设置监听器监听上传状态
-
-                Map<String, String> params = new HashMap<String, String>();
-                String desDir = f.getParent().substring(f.getParent().lastIndexOf("/")+1);
-                params.put("filePath", desDir);
-                params.put("uploadfile", "uploadfile");
-
-                uploadUtil.uploadFile(f.getAbsolutePath(), fileKey, requestURL, params);
+    public boolean isGranted(String permission) {
+        return !isMarshmallow() || isGranted_(permission);
+    }
+    private boolean isMarshmallow() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+    private boolean isGranted_(String permission) {
+        int checkSelfPermission = checkSelfPermission(permission);
+        return checkSelfPermission == PackageManager.PERMISSION_GRANTED;
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 1||requestCode == 2) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                doUpload();
+            } else {
+               // Toast.makeText(MainActivity.this, "您没有授权该权限，请在设置中打开授权", Toast.LENGTH_SHORT).show();
+                uploadImageResult.setText("您没有授权该权限，请在设置中打开授权");
             }
-       }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+    private void toUploadFile() {
+
+        if(!isGranted(Manifest.permission.READ_EXTERNAL_STORAGE)){
+            if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
+                uploadImageResult.setText("上传照片和视频需要读你本地存储权限");
+            }
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            return;
+        }
+        doUpload();
+
+    }
+    private void doUpload(){
+
+        String serverIp = serverIpText.getText().toString();
+        requestURL = String.format("http://%s/upload",serverIp);
+        uploadImageResult.setText("开始上传到" + requestURL  + "\n");
+        //计算文件个数
+        fileCount = 0;
+        String []  dirPathsArray = dirPaths.split(";");
+        for(String dirPath : dirPathsArray) {
+            File dir = new File(dirPath);
+            if (dir.exists() && dir.isDirectory())
+                for (File f : dir.listFiles()) {
+                    if (f.isDirectory())
+                        continue;
+                    fileCount ++;
+                }
+        }
+        uploadSuccessCount = 0;
+        uploadCallbackCount = 0;
+        progressBar.setProgress(0);
+        progressBar.setMax(fileCount);
+        for(String dirPath : dirPathsArray) {
+            File dir = new File(dirPath);
+            if(dir.exists() && dir.isDirectory())
+                for (File f : dir.listFiles()) {
+                    if (f.isDirectory())
+                        continue;
+                    String fileKey = "uploadfile";
+                    UploadUtil uploadUtil = UploadUtil.getInstance();                    ;
+                    uploadUtil.setOnUploadProcessListener(this);  //设置监听器监听上传状态
+                    Map<String, String> params = new HashMap<String, String>();
+                    String desDir = f.getParent().substring(f.getParent().lastIndexOf("/")+1);
+                    params.put("filePath", desDir);
+                    params.put("uploadfile", "uploadfile");
+                    uploadUtil.uploadFile(f.getAbsolutePath(), fileKey, requestURL, params);
+                }
+        }
     }
 
     private Handler handler = new Handler() {
@@ -135,18 +190,24 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
                     break;
 
                 case UPLOAD_INIT_PROCESS:
-                    progressBar.setMax(msg.arg1);
+                  //  progressBar.setMax(msg.arg1);
                     break;
                 case UPLOAD_IN_PROCESS:
-                    progressBar.setProgress(msg.arg1);
+                 //   progressBar.setProgress(msg.arg1);
                     break;
                 case UPLOAD_FILE_DONE:
-                    String result = "响应码：" + msg.arg1 + "\n响应信息：" + msg.obj + "\n耗时：" + UploadUtil.getRequestTime() + "秒\n";
-
+                    progressBar.incrementProgressBy(1);
+                    uploadCallbackCount ++;
+                  //  String result = "响应码：" + msg.arg1 + ",响应信息：" + msg.obj + ",耗时：" + UploadUtil.getRequestTime() + "秒";
+                    String result =  msg.obj + ",耗时：" + UploadUtil.getRequestTime() + "秒\n";
+                    if(msg.arg1 == UploadUtil.UPLOAD_SUCCESS_CODE)
+                         uploadSuccessCount ++;
+                    uploadTotalTime += UploadUtil.getRequestTime();
                     uploadImageResult.append(result);
+                    if(uploadCallbackCount == fileCount)
+                        uploadImageResult.append("上传文件成功个数" + uploadSuccessCount + ",总耗时：" + uploadTotalTime + "秒\n");
                     break;
                 case SET_SERVER_IP:
-
                     break;
                 default:
                     break;
