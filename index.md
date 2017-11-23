@@ -13,21 +13,19 @@
 
 3.电脑端下载后双击即可，手机端下载后安装即可
 4.界面预览。
+
 <p class="text-center">
-  <img src="{{ site.baseurl}}/apk-upload-logo.png" width="200" height="200" alt="">
-</p>
-<p class="text-center">
-  <img src="{{ site.baseurl}}/go-upload.png" width="200" height="200" alt="">
+  <img src="{{ site.baseurl}}/go-upload.png" >
 </p>
 
 <p class="text-center">
-  <img src="{{ site.baseurl}}/apk-upload.png" width="200" height="200" alt="">
+  <img src="{{ site.baseurl}}/apk-upload.png" >
 </p>
 
 <p class="text-center">
-  <img src="{{ site.baseurl}}/go-upload-over.png" width="200" height="200" alt="">
+  <img src="{{ site.baseurl}}/go-upload-over.png" >
 </p>
 
 <p class="text-center">
-  <img src="{{ site.baseurl}}/apk-upload-over.png" width="200" height="200" alt="">
+  <img src="{{ site.baseurl}}/apk-upload-over.png" >
 </p>
