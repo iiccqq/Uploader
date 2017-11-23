@@ -1,6 +1,6 @@
 ## 欢迎使用一键上传工具
 
-一键上传相机和微信的图片和视频到电脑。
+局域网一键上传相机和微信的图片和视频到电脑。
 
 操作简单，传输速度快。
 
@@ -14,20 +14,22 @@
 
 3.电脑端下载后双击即可，手机端下载后安装即可
 
-4.界面预览。
+4.界面预览，见最后。
+
+5.上传文件的位置，电脑端与upload.exe同级目录Camera和WeiXin
 
 <p class="text-center">
-  <img src="{{ site.baseurl}}/go-upload.png" >
+  <img src="https://iiccqq.github.io/Uploader/go-upload.png" >
 </p>
 
 <p class="text-center">
-  <img src="{{ site.baseurl}}/apk-upload.png" >
+  <img src="https://iiccqq.github.io/Uploader/apk-upload.png" >
 </p>
 
 <p class="text-center">
-  <img src="{{ site.baseurl}}/go-upload-over.png" >
+  <img src="https://iiccqq.github.io/Uploader/go-upload-over.png" >
 </p>
 
 <p class="text-center">
-  <img src="{{ site.baseurl}}/apk-upload-over.png" >
+  <img src="https://iiccqq.github.io/Uploader/apk-upload-over.png" >
 </p>
