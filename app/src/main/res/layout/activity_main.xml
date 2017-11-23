@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.android_scrollview.MainActivity" >
+    tools:context="com.fc.uploader.MainActivity" >
 
 <ScrollView
         android:id="@+id/scrollView1"
@@ -54,6 +54,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="复制电脑端程序下载地址" />
+            <TextView
+                android:id="@+id/tipText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="上传相机和微信中文件，具体的路径为：\n1:storage/emulated/0/DCIM/Camera/\n2:/storage/emulated/0/tencent/MicroMsg/WeiXin/"
+                android:layout_weight="0.05"  />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
