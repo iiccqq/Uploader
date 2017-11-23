@@ -58,7 +58,7 @@
                 android:id="@+id/tipText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="上传相机和微信中文件，具体的路径为：\n1:storage/emulated/0/DCIM/Camera/\n2:/storage/emulated/0/tencent/MicroMsg/WeiXin/"
+                android:text="上传相机和微信中文件，具体的路径为：\n1:/storage/emulated/0/DCIM/Camera/\n2:/storage/emulated/0/tencent/MicroMsg/WeiXin/"
                 android:layout_weight="0.05"  />
         </LinearLayout>
     </ScrollView>
