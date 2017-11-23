@@ -11,8 +11,9 @@
 ```
 # 一共两个软件，一个在电脑端，一个在手机端
 **一共两个软件，一个在电脑端，一个在手机端**
-1.电脑端下载地址：[https://iiccqq.github.io/Uploader/upload.exe](https://iiccqq.github.io/Uploader/upload.exe)
-2.手机端下载地址：https://iiccqq.github.io/Uploader/upload.apk
+1.电脑端下载地址：[https://iiccqq.github.io/Uploader/upload.exe](https://iiccqq.github.io/Uploader/upload.exe) 
+2.手机端下载地址：[https://iiccqq.github.io/Uploader/upload.apk](https://iiccqq.github.io/Uploader/upload.apk) 
+
 3.电脑端下载后双击即可，手机端下载后安装即可
 
 <p class="text-center">
