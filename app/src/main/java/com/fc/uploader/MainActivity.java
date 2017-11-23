@@ -3,6 +3,7 @@ package com.fc.uploader;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -60,6 +61,9 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
     private int uploadCallbackCount = 0;
     private int uploadTotalTime = 0;
     private int fileCount = 0;
+
+    public static final String PREFS_NAME = "MyPrefsFile";
+
     /**
      * Called when the activity is first created.
      */
@@ -79,6 +83,21 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
         uploadImageResult = (TextView) findViewById(R.id.uploadImageResult);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         serverIpText =  (EditText) findViewById(R.id.serverIp);
+        String serverIp = getServerIp();
+        serverIpText.setText(serverIp);
+    }
+
+    public String getServerIp() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        String serverIp = settings.getString("serverIp", "192.168.1.101");
+        return serverIp;
+    }
+
+    private void setServerIp() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("serverIp", serverIpText.getText().toString());
+        editor.commit();
     }
 
     @Override
@@ -143,7 +162,7 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
 
     }
     private void doUpload(){
-
+        setServerIp();
         String serverIp = serverIpText.getText().toString();
         requestURL = String.format("http://%s/upload",serverIp);
         uploadImageResult.setText("开始上传到" + requestURL  + "\n");
