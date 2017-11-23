@@ -3,6 +3,9 @@ package com.fc.uploader;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -43,12 +46,13 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
     private static final int UPLOAD_IN_PROCESS = 5;
 
 
-    protected static final int SET_SERVER_IP = 6;
+    protected static final int COPY_DOWNLOAD_URL = 6;
     /***
      * 这里的这个URL是我服务器的javaEE环境URL
      */
     private static String requestURL = "";//http://10.0.2.2:8080/upload";
     private Button  uploadButton;
+    private Button copyDownloadUrlButton;
     private TextView uploadImageResult;
     private ProgressBar progressBar;
 
@@ -80,6 +84,12 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
     private void initView() {
         uploadButton = (Button) this.findViewById(R.id.uploadImage);
         uploadButton.setOnClickListener(this);
+        uploadButton.setFocusable(true);
+        uploadButton.setFocusableInTouchMode(true);
+        uploadButton.requestFocus();
+        uploadButton.requestFocusFromTouch();
+        copyDownloadUrlButton = (Button) this.findViewById(R.id.copyDownloadUrl);
+        copyDownloadUrlButton.setOnClickListener(this);
         uploadImageResult = (TextView) findViewById(R.id.uploadImageResult);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         serverIpText =  (EditText) findViewById(R.id.serverIp);
@@ -106,6 +116,9 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
         switch (v.getId()) {
             case R.id.uploadImage:
                     handler.sendEmptyMessage(TO_UPLOAD_FILE);
+                break;
+            case R.id.copyDownloadUrl:
+                handler.sendEmptyMessage(COPY_DOWNLOAD_URL);
                 break;
             default:
                 break;
@@ -207,7 +220,6 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
                 case TO_UPLOAD_FILE:
                     toUploadFile();
                     break;
-
                 case UPLOAD_INIT_PROCESS:
                   //  progressBar.setMax(msg.arg1);
                     break;
@@ -215,18 +227,27 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
                  //   progressBar.setProgress(msg.arg1);
                     break;
                 case UPLOAD_FILE_DONE:
-                    progressBar.incrementProgressBy(1);
+
                     uploadCallbackCount ++;
                   //  String result = "响应码：" + msg.arg1 + ",响应信息：" + msg.obj + ",耗时：" + UploadUtil.getRequestTime() + "秒";
                     String result =  msg.obj + ",耗时：" + UploadUtil.getRequestTime() + "秒\n";
-                    if(msg.arg1 == UploadUtil.UPLOAD_SUCCESS_CODE)
-                         uploadSuccessCount ++;
+                    if(msg.arg1 == UploadUtil.UPLOAD_SUCCESS_CODE) {
+                        progressBar.incrementProgressBy(1);
+                        uploadSuccessCount++;
+                    }
+                    else{
+                        uploadImageResult.setText("1.确保电脑端upload.exe是否启动，没有启动双击即可。\nupload.exe下载地址为：https://iiccqq.github.io/Uploader/upload.exe\n2.检查网络或防火墙80端口开发");
+                    }
                     uploadTotalTime += UploadUtil.getRequestTime();
                     uploadImageResult.append(result);
                     if(uploadCallbackCount == fileCount)
                         uploadImageResult.append("上传文件成功个数" + uploadSuccessCount + ",总耗时：" + uploadTotalTime + "秒\n");
                     break;
-                case SET_SERVER_IP:
+                case COPY_DOWNLOAD_URL:
+                    ClipboardManager clipboard = (ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("simple text", "https://iiccqq.github.io/Uploader/upload.exe");
+                    clipboard.setPrimaryClip(clip);
                     break;
                 default:
                     break;

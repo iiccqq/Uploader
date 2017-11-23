@@ -36,18 +36,24 @@
         android:layout_width="match_parent"
         android:layout_height="30dp" />
 
-    <Button
-        android:id="@+id/uploadImage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="上传" />
+            <Button
+                android:id="@+id/uploadImage"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:text="上传" />
     <TextView
         android:id="@+id/uploadImageResult"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text=""
         android:layout_weight="0.05"  />
-
+      <Button
+                android:id="@+id/copyDownloadUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="复制电脑端程序下载地址" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
