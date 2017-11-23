@@ -1,37 +1,17 @@
-## Welcome to GitHub Pages
+## 欢迎使用一键上传工具
 
-You can use the [editor on GitHub](https://github.com/iiccqq/Uploader/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+一键上传相机和微信的图片和视频到电脑。
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+操作简单，传输速度快。
 
-### Markdown
+### 解决的问题
+解决备份相机和微信的图片和视频操作麻烦。
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```如何安装
+# 一共两个软件，一个在电脑端，一个在手机端
+**一共两个软件，一个在电脑端，一个在手机端**
+1.电脑端下载地址：https://iiccqq.github.io/Uploader/upload.exe
+2.手机端下载地址：https://iiccqq.github.io/Uploader/upload.apk
+3.电脑端下载后双击即可，手机端下载后安装即可
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/iiccqq/Uploader/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
