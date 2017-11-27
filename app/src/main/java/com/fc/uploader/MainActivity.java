@@ -16,10 +16,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,6 +93,7 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
         serverIpText =  (EditText) findViewById(R.id.serverIp);
         String serverIp = getServerIp();
         serverIpText.setText(serverIp);
+
     }
 
     public String getServerIp() {
@@ -175,6 +174,17 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
 
     }
     private void doUpload(){
+       //int a =  progressBar.re
+        UploadUtil uploadUtil = UploadUtil.getInstance();
+        if(uploadButton.getText().toString().equals("上传")) {
+            uploadButton.setText("停止");
+        }
+        else{
+            uploadButton.setText("上传");
+            uploadUtil.setStop();
+            progressBar.setProgress(0);
+            return;
+        }
         setServerIp();
         String serverIp = serverIpText.getText().toString();
         requestURL = String.format("http://%s/upload",serverIp);
@@ -195,14 +205,14 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
         uploadCallbackCount = 0;
         progressBar.setProgress(0);
         progressBar.setMax(fileCount);
+
         for(String dirPath : dirPathsArray) {
             File dir = new File(dirPath);
             if(dir.exists() && dir.isDirectory())
                 for (File f : dir.listFiles()) {
                     if (f.isDirectory())
                         continue;
-                    String fileKey = "uploadfile";
-                    UploadUtil uploadUtil = UploadUtil.getInstance();                    ;
+                    String fileKey = "uploadfile";                         ;
                     uploadUtil.setOnUploadProcessListener(this);  //设置监听器监听上传状态
                     Map<String, String> params = new HashMap<String, String>();
                     String desDir = f.getParent().substring(f.getParent().lastIndexOf("/")+1);
@@ -240,8 +250,10 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
                     }
                     uploadTotalTime += UploadUtil.getRequestTime();
                     uploadImageResult.append(result);
-                    if(uploadCallbackCount == fileCount)
+                    if(uploadCallbackCount == fileCount) {
                         uploadImageResult.append("上传文件成功个数" + uploadSuccessCount + ",总耗时：" + uploadTotalTime + "秒\n");
+                        uploadButton.setText("上传");
+                    }
                     break;
                 case COPY_DOWNLOAD_URL:
                     ClipboardManager clipboard = (ClipboardManager)

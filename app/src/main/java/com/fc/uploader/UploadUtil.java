@@ -11,6 +11,11 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import android.util.Log;
 
@@ -21,11 +26,21 @@ public class UploadUtil {
     private static final String LINE_END = "\r\n";
     private static final String CONTENT_TYPE = "multipart/form-data"; // 内容类型  
 
-    private static final int BUFFER_SIZE = 1024*1024*3;
+    private ExecutorService poolExecutor;
+    private BlockingDeque bq = new LinkedBlockingDeque<Runnable>(128);
+    private static final int BUFFER_SIZE = 1024*1024;
+    private boolean stop = false;
     private UploadUtil() {
+        poolExecutor = new ThreadPoolExecutor(1, 1,
+                1, TimeUnit.SECONDS, bq);
 
     }
 
+    public void setStop(){
+        bq.clear();
+        this.stop = true;
+
+    }
     /**
      * 单例模式获取上传工具类
      *
@@ -72,6 +87,7 @@ public class UploadUtil {
      */
     public void uploadFile(String filePath, String fileKey, String RequestURL,
                            Map<String, String> param) {
+        stop = false;
         if (filePath == null) {
             sendMessage(UPLOAD_FILE_NOT_EXISTS_CODE, "文件不存在");
             return;
@@ -103,13 +119,13 @@ public class UploadUtil {
         Log.i(TAG, "请求的URL=" + RequestURL);
         Log.i(TAG, "请求的fileName=" + file.getName());
         Log.i(TAG, "请求的fileKey=" + fileKey);
-        new Thread(new Runnable() {  //开启线程上传文件
+
+        poolExecutor.execute(new Runnable() {  //开启线程上传文件
             @Override
             public void run() {
                 toUploadFile(file, fileKey, RequestURL, param);
             }
-        }).start();
-
+        });
     }
 
     private void toUploadFile(File file, String fileKey, String RequestURL,
@@ -185,12 +201,17 @@ public class UploadUtil {
             byte[] bytes = new byte[BUFFER_SIZE];
             int len = 0;
             int curLen = 0;
-            while ((len = is.read(bytes)) != -1) {
+            while ((len = is.read(bytes)) != -1&&!stop) {
                 curLen += len;
                 dos.write(bytes, 0, len);
                 onUploadProcessListener.onUploadProcess(curLen);
             }
             is.close();
+            if(stop) {
+                dos.close();
+                onUploadProcessListener.onUploadProcess(0);
+                return;
+            }
 
             dos.write(LINE_END.getBytes());
             byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END).getBytes();
@@ -205,12 +226,14 @@ public class UploadUtil {
             responseTime = System.currentTimeMillis();
             this.requestTime = (int) ((responseTime - requestTime) / 1000);
             Log.e(TAG, "response code:" + res);
+            Log.e(TAG,"size=" + bq.size());
+
             if (res == 200) {
                 Log.e(TAG, "request success");
                 InputStream input = conn.getInputStream();
                 StringBuffer sb1 = new StringBuffer();
                 int ss;
-                byte [] bf = new byte[1024];
+                byte [] bf = new byte[50];
                 while ((ss = input.read(bf)) != -1) {
                     String s = new String(bf,"utf-8");
                     sb1.append(s);
@@ -223,17 +246,16 @@ public class UploadUtil {
             } else {
                 Log.e(TAG, "request error");
                 sendMessage(UPLOAD_SERVER_ERROR_CODE, "上传失败：code=" + res);
-                return;
             }
+
         } catch (MalformedURLException e) {
             sendMessage(UPLOAD_SERVER_ERROR_CODE, "上传失败：error=" + e.getMessage());
             e.printStackTrace();
-            return;
         } catch (IOException e) {
             sendMessage(UPLOAD_SERVER_ERROR_CODE, "上传失败：error=" + e.getMessage());
             e.printStackTrace();
-            return;
         }
+        bq.clear();
     }
 
     /**
