@@ -247,6 +247,7 @@ public class MainActivity extends Activity implements OnClickListener, UploadUti
                     }
                     else{
                         uploadImageResult.setText("1.确保电脑端upload.exe是否启动，没有启动双击即可。\nupload.exe下载地址为：https://iiccqq.github.io/Uploader/upload.exe\n2.检查网络或防火墙80端口开发");
+                        uploadButton.setText("上传");
                     }
                     uploadTotalTime += UploadUtil.getRequestTime();
                     uploadImageResult.append(result);
