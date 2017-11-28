@@ -19,17 +19,17 @@
 5.上传文件的位置，电脑端与upload.exe同级目录Camera和WeiXin
 
 <p class="text-center">
-  <img src="https://iiccqq.github.io/Uploader/go-upload.png" >
+  <img src="https://iiccqq.github.io/Uploader/go-upload-over.png" >
 </p>
-
 <p class="text-center">
   <img src="https://iiccqq.github.io/Uploader/apk-upload.png" >
 </p>
-
 <p class="text-center">
-  <img src="https://iiccqq.github.io/Uploader/go-upload-over.png" >
+  <img src="https://iiccqq.github.io/Uploader/apk-upload-click.png" >
 </p>
-
+<p class="text-center">
+  <img src="https://iiccqq.github.io/Uploader/apk-upload-uploading.png" >
+</p>
 <p class="text-center">
   <img src="https://iiccqq.github.io/Uploader/apk-upload-over.png" >
 </p>
